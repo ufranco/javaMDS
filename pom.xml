@@ -1,11 +1,14 @@
 <project
   xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+>
+
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.progra3</groupId>
   <artifactId>javaMDS</artifactId>
   <version>1.0.0</version>
+  <description>Java Graph and Minimum Dominating Set implementation</description>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -15,6 +18,7 @@
   </properties>
 
   <developers>
+
     <developer>
       <id>Ulises Javier Franco</id>
       <roles>
@@ -46,54 +50,75 @@
       </roles>
       <url>github.com/legui04</url>
     </developer>
+
   </developers>
 
   <dependencies>
+
     <dependency>
+
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
       <version>${junit.version}</version>
+
       <exclusions>
         <exclusion>
           <groupId>org.junit.vintage</groupId>
           <artifactId>junit-vintage-engine</artifactId>
         </exclusion>
       </exclusions>
+
     </dependency>
+
     <dependency>
+
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
       <version>${assertj.version}</version>
       <scope>test</scope>
+
     </dependency>
+
   </dependencies>
 
 
   <build>
+
     <plugins>
+
       <plugin>
+
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
+
         <configuration>
           <release>${java.version}</release>
         </configuration>
+
       </plugin>
+
       <plugin>
+
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <version>3.2.0</version>
+
         <configuration>
+
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>
-                  com.progra3.javaMDS.Main
-              </mainClass>
+              <mainClass>com.progra3.javaMDS.Main</mainClass>
             </manifest>
           </archive>
+
         </configuration>
+
       </plugin>
+
     </plugins>
+
   </build>
+
 </project>
