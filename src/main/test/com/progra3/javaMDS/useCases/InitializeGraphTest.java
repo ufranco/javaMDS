@@ -1,6 +1,7 @@
-package com.progra3.javaMST.useCases;
+package com.progra3.javaMDS.useCases;
 
 import com.progra3.javaMDS.back.application.exceptions.InvalidGraphSizeException;
+import com.progra3.javaMDS.back.domain.repositories.GraphRepository;
 import com.progra3.javaMDS.back.domain.services.GraphService;
 import org.junit.jupiter.api.Test;
 
@@ -16,10 +17,15 @@ public class InitializeGraphTest {
 
     final var graphSize = 5;
 
-    assertThat(new GraphService(graphSize))
+    final var result = new GraphRepository(graphSize);
+
+    assertThat(result)
       .describedAs("It should initialize sucessfully")
-      .isInstanceOf(ArrayList.class)
-      .isEqualTo();
+      .isInstanceOf(ArrayList.class);
+
+    assertThat(result.getNeighbors())
+      .describedAs("It should contain 5 list, one per vertex")
+      .hasSize(graphSize);
 
   }
 

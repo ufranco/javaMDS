@@ -1,13 +1,12 @@
 package com.progra3.javaMDS.back.domain.repositories;
 
-import com.progra3.javaMDS.back.application.algorithms.interfaces.GraphAlgorithm;
 import com.progra3.javaMDS.back.application.exceptions.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-public class GraphRepository {
+public final class GraphRepository {
 
   public ArrayList<Set<Integer>> getNeighbors() {
     return (ArrayList<Set<Integer>>) neighbors.clone();
@@ -119,6 +118,4 @@ public class GraphRepository {
 
     return true;
   }
-
-  public void executeAlgorithm(GraphAlgorithm algorithm) { algorithm.execute(neighbors); }
 }

@@ -1,10 +1,11 @@
-package com.progra3.javaMST.useCases;
+package com.progra3.javaMDS.useCases;
 
 import com.progra3.javaMDS.back.application.exceptions.*;
 import com.progra3.javaMDS.back.domain.services.GraphService;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -18,13 +19,25 @@ public class RemoveEdgeTest {
   @Test
   public void validEdgeRemove() throws CircularReferenceException, VertexIndexOutOfBoundsException, EdgeAlreadyExistException, EdgeDoesNotExistException {
 
-    service.addEdge(2,3);
+    final var x = 2;
+    final var y = 3;
+    service.addEdge(x,y);
 
-    assertThat(service.removeEdge(2, 3))
+    final var result = service.removeEdge(x, y);
+
+    assertThat(result)
       .describedAs("It should remove edge successfully")
       .isNotNull()
-      .isInstanceOf(ArrayList.class)
-      .isEqualTo();
+      .isNotInstanceOf(Exception.class)
+      .isInstanceOf(ArrayList.class);
+
+    assertThat(result.get(x))
+      .describedAs("Y should no longer be on X's neighbors list")
+      .doesNotContain(y);
+
+    assertThat(result.get(y))
+      .describedAs("X also should no longer be on Y's neighbors list")
+      .doesNotContain(x);
 
   }
 

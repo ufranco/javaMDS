@@ -1,10 +1,13 @@
-package com.progra3.javaMST.useCases;
+package com.progra3.javaMDS.useCases;
 
 import com.progra3.javaMDS.back.application.exceptions.*;
 import com.progra3.javaMDS.back.domain.services.GraphService;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -18,15 +21,24 @@ public class AddEdgeTest {
 
   @Test
   public void validEdgeAddition() throws CircularReferenceException, VertexIndexOutOfBoundsException, EdgeAlreadyExistException {
-
     final var x = 2;
     final var y = 3;
 
-    assertThat(service.addEdge(x, y))
+    final var result = service.addEdge(x, y);
+
+    assertThat(result)
       .describedAs("It should add edge successfully")
       .isNotNull()
-      .isInstanceOf(ArrayList.class)
-    .isEqualTo();
+      .isNotInstanceOf(Exception.class)
+      .isInstanceOf(ArrayList.class);
+
+    assertThat(result.get(x))
+      .describedAs("Y should be added to X's neighbors list.")
+      .contains(y);
+
+    assertThat(result.get(y))
+      .describedAs("X should be added to Y's neighbors list as well.")
+      .contains(x);
   }
 
   @Test
