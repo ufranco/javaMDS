@@ -1,18 +1,19 @@
 package com.progra3.javaMDS.front;
 
+import com.progra3.javaMDS.back.application.exceptions.InvalidGraphSizeException;
+import com.progra3.javaMDS.back.domain.services.GraphService;
+
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 public class GraphCreation {
   private JPanel panel;
   private JSpinner vertexCounter;
   private int vertexCount;
-  private JFrame frame;
+  private final JFrame frame;
+  private GraphService graphService;
 
   GraphCreation(JFrame frame) {
     this.frame = frame;
@@ -31,12 +32,8 @@ public class GraphCreation {
 
   private void initComponents() {
     vertexCounter = new JSpinner();
-    vertexCounter.setModel(new SpinnerNumberModel(2, 2, null, 1));
-    vertexCounter.addChangeListener(new ChangeListener() {
-      public void stateChanged(ChangeEvent e) {
-        setVertexValue();
-      }
-    });
+    vertexCounter.setModel(new SpinnerNumberModel(0, null, null, 1));
+    vertexCounter.addChangeListener(e -> setVertexValue());
     vertexCounter.setBounds(368, 371, 106, 20);
     panel.add(vertexCounter);
 
@@ -81,15 +78,21 @@ public class GraphCreation {
   }
 
   private void displayAddEdges() {
-    setVertexValue();
-    AddEdges gc = new AddEdges(getFrame(), vertexCount);
+    verifyValues();
+    new AddEdges(getFrame(), vertexCount, graphService);
     this.panel.setVisible(false);
     panel.setEnabled(false);
   }
-  private void initController(){ }
+  private void initService() {
+    try {
+      graphService = new GraphService(vertexCount);
+    } catch (InvalidGraphSizeException e) {
+      JOptionPane.showMessageDialog(this.panel, e.getMessage(), "Error: "+e.getClass().getSimpleName(), JOptionPane.ERROR_MESSAGE);
+    }
+  }
+
   private void verifyValues() {
     setVertexValue();
-    initController();
-    vertexCount = (Integer) vertexCounter.getValue();
+    initService();
   }
 }

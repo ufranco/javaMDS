@@ -18,14 +18,12 @@ public class MainFrame {
    * Launch the application.
    */
   public static void main(String[] args) {
-    EventQueue.invokeLater(new Runnable() {
-      public void run() {
-        try {
-          MainFrame window = new MainFrame();
-          window.frmJavaagm.setVisible(true);
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
+    EventQueue.invokeLater(() -> {
+      try {
+        MainFrame window = new MainFrame();
+        window.frmJavaagm.setVisible(true);
+      } catch (Exception e) {
+        e.printStackTrace();
       }
     });
   }
@@ -69,7 +67,7 @@ public class MainFrame {
   }
 
   private void displayCreateGraph(){
-    GraphCreation gc = new GraphCreation(getFrame());
+    new GraphCreation(getFrame());
     this.panel.setVisible(false);
     panel.setEnabled(false);
   }
