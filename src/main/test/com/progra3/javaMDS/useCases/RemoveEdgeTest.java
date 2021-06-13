@@ -5,7 +5,6 @@ import com.progra3.javaMDS.back.domain.services.GraphService;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -17,7 +16,13 @@ public class RemoveEdgeTest {
   public RemoveEdgeTest() throws InvalidGraphSizeException { this.service = new GraphService(5); }
 
   @Test
-  public void validEdgeRemove() throws CircularReferenceException, VertexIndexOutOfBoundsException, EdgeAlreadyExistException, EdgeDoesNotExistException {
+  public void validEdgeRemove() throws
+    CircularReferenceException,
+    VertexIndexOutOfBoundsException,
+    EdgeAlreadyExistException,
+    EdgeDoesNotExistException,
+    NullVertexException
+  {
 
     final var x = 2;
     final var y = 3;
@@ -64,7 +69,6 @@ public class RemoveEdgeTest {
 
   @Test
   public void edgeDoesNotExist() {
-
     final var x = 5;
     final var y = 4;
 

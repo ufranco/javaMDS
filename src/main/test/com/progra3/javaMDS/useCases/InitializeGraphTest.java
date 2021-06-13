@@ -31,13 +31,10 @@ public class InitializeGraphTest {
 
   @Test
   public void nullGraphSize() {
-
-    final Integer graphSize = null;
-
-    assertThatThrownBy(() -> new GraphService(graphSize))
+    assertThatThrownBy(() -> new GraphService(null))
       .describedAs("It should fail due to null graph size")
       .isInstanceOf(InvalidGraphSizeException.class)
-      .hasMessage("Graph size cannot be negative nor null: "+ graphSize);
+      .hasMessage("Graph size cannot be negative nor null: "+ null);
   }
 
   @Test

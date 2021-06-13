@@ -12,7 +12,7 @@ public final class GraphService {
   private final GraphRepository repository;
 
   public GraphService(final Integer graphSize) throws InvalidGraphSizeException {
-    this.repository = new GraphRepository(graphSize);
+    repository = new GraphRepository(graphSize);
   }
 
   public ArrayList<Set<Integer>> addEdge(
@@ -21,7 +21,8 @@ public final class GraphService {
   ) throws
     CircularReferenceException,
     VertexIndexOutOfBoundsException,
-    EdgeAlreadyExistException
+    EdgeAlreadyExistException,
+    NullVertexException
   {
     repository.addEdge(x, y);
     return repository.getNeighbors();
@@ -33,20 +34,15 @@ public final class GraphService {
   ) throws
     CircularReferenceException,
     VertexIndexOutOfBoundsException,
-    EdgeDoesNotExistException {
+    EdgeDoesNotExistException,
+    NullVertexException
+  {
     repository.removeEdge(x, y);
     return repository.getNeighbors();
   }
 
-  public Set<Integer> executeMDS() throws DisconnectedGraphException {
-
-    if(!repository.isConnected()) {
-      throw new DisconnectedGraphException(
-        "Actual graph have internal disconnections and cannot be used by this algorithm"
-      );
-    }
-
-    return MinimumDominatingSetProcedure.execute(repository.getNeighbors());
+  public Set<Integer> executeMDS() {
+    return new MinimumDominatingSetProcedure(repository.getNeighbors()).execute();
   }
 
 
