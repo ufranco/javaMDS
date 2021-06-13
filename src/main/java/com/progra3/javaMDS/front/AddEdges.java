@@ -10,7 +10,9 @@ import com.progra3.javaMDS.front.Utils.Edge;
 
 import javax.swing.*;
 import java.awt.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class AddEdges {
 
@@ -98,54 +100,48 @@ public class AddEdges {
 
   private void addEdgeToRecord() {
     Edge edge = createEdge();
-    if ((edge != null)) {
-      try {
-        graphService.addEdge(edge.getX(), edge.getY());
-        edges.add(edge);
-        String text = String.format("(%s,%s);", edge.getX(), edge.getY());
-        record = record + text;
-        edgesRecord.setText("[" + record + "]");
-
-      } catch (VertexIndexOutOfBoundsException | CircularReferenceException | EdgeAlreadyExistException e) {
-        JOptionPane.showMessageDialog(this.panel, e.getMessage(), "Error: " + e.getClass().getSimpleName(), JOptionPane.ERROR_MESSAGE);
-      }
+    try {
+      graphService.addEdge(edge.getX(), edge.getY());
+      edges.add(edge);
+      String text = String.format("(%s,%s);", edge.getX(), edge.getY());
+      record = record + text;
+      edgesRecord.setText("[" + record + "]");
+    } catch (VertexIndexOutOfBoundsException | CircularReferenceException | EdgeAlreadyExistException e) {
+      JOptionPane.showMessageDialog(this.panel, e.getMessage(), "Error: " + e.getClass().getSimpleName(), JOptionPane.ERROR_MESSAGE);
     }
   }
 
-  private Edge createEdge() {
-      return new Edge((Integer) vertex1.getValue(), (Integer) vertex2.getValue());
-  }
+  private Edge createEdge() { return new Edge((Integer) vertex1.getValue(), (Integer) vertex2.getValue()); }
 
   private void deleteOne() {
     Edge edge = createEdge();
-    if (edge != null) {
-      try {
-        graphService.removeEdge(edge.getX(), edge.getY());
-        removeOneRecord(edge);
-        edges.remove(edge);
-      } catch (EdgeDoesNotExistException | VertexIndexOutOfBoundsException | CircularReferenceException e) {
-        JOptionPane.showMessageDialog(this.panel, e.getMessage(), "Error: " + e.getClass().getSimpleName(), JOptionPane.ERROR_MESSAGE);
-      }
+    try {
+      graphService.removeEdge(edge.getX(), edge.getY());
+      removeOneRecord(edge);
+      edges.remove(edge);
+    } catch (EdgeDoesNotExistException | VertexIndexOutOfBoundsException | CircularReferenceException e) {
+      JOptionPane.showMessageDialog(this.panel, e.getMessage(), "Error: " + e.getClass().getSimpleName(), JOptionPane.ERROR_MESSAGE);
     }
   }
 
   private void removeOneRecord(Edge edge) {
     String edgeRecord = String.format("(%s,%s)", edge.getX(), edge.getY());
-
-    String[] recordString = record.split(";");
-    for (int i=0; i<recordString.length; i++) {
-      if (recordString[i].equals(edgeRecord)) {
-        recordString[i] = "";
+    String edgeRecord2 = String.format("(%s,%s)", edge.getY(), edge.getX());
+    ArrayList<String> recordString = new ArrayList<>();
+    Collections.addAll(recordString,record.split(";"));
+    for (int i=0; i<recordString.size(); i++) {
+      if (recordString.get(i).equals(edgeRecord) || recordString.get(i).equals(edgeRecord2)) {
+        recordString.remove(i);
         break;
       }
     }
     record = String.join(";", recordString);
-    edgesRecord.setText(String.format("[%s]", record));
+    edgesRecord.setText(String.format("[%s;]", record));
   }
 
   private void deleteLast() {
-    Edge edge = createEdge();
-    if (edge != null && edges.size() > 0) {
+    Edge edge = edges.get(edges.size()-1);
+    if (edges.size() > 0) {
       try {
         graphService.removeEdge(edge.getX(),edge.getY());
         removeLastRecord();
@@ -156,10 +152,11 @@ public class AddEdges {
     }
   }
   private void removeLastRecord() {
-    String[] recordString = record.split(";");
-    recordString[recordString.length - 1] = "";
+    ArrayList<String> recordString = new ArrayList<>();
+    Collections.addAll(recordString,record.split(";"));
+    recordString.remove(recordString.size()-1);
     record = String.join(";", recordString);
-    edgesRecord.setText(String.format("[%s]", record));
+    edgesRecord.setText(String.format("[%s;]", record));
   }
 
   private void displayGraphCreation() {
@@ -172,10 +169,7 @@ public class AddEdges {
       new EndResult(getFrame(),2);
       this.panel.setVisible(false);
       panel.setEnabled(false);
-      //else JOptionPane.showMessageDialog(this.panel, "no hay aristas en este grafo");
   }
 
-  private JFrame getFrame() {
-    return this.frame;
-  }
+  private JFrame getFrame() { return this.frame; }
 }
