@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import static java.util.stream.IntStream.iterate;
+
 public final class GraphRepository {
 
   public ArrayList<Set<Integer>> getNeighbors() {
@@ -15,107 +17,68 @@ public final class GraphRepository {
   private final ArrayList<Set<Integer>> neighbors;
 
   public GraphRepository(final Integer graphSize) throws InvalidGraphSizeException {
-    if(graphSize <= 0 ) {
-      throw new InvalidGraphSizeException("Graph size cannot be negative nor null: "+ graphSize);
-    }
+    if(graphSize <= 0 ) throw new InvalidGraphSizeException("Graph size cannot be negative nor null: "+ graphSize);
 
     neighbors = new ArrayList<>(graphSize);
 
-    for (int x = 0; x < graphSize; x++) {
-      neighbors.add(new HashSet<>());
-    }
+    iterate(0, i -> i + 1)
+      .limit(graphSize)
+      .forEach(i -> neighbors.add(new HashSet<>()));
   }
 
-  public void addEdge(final Integer x, final Integer y) throws CircularReferenceException, VertexIndexOutOfBoundsException, EdgeAlreadyExistException {
-    checkEdge(x, y);
-
-    if(neighbors.get(x).contains(y)) {
-      throw new EdgeAlreadyExistException("That edge already exists!");
-    }
+  public void addEdge(final Integer x, final Integer y) throws
+    CircularReferenceException,
+    VertexIndexOutOfBoundsException,
+    EdgeAlreadyExistException,
+    NullVertexException
+  {
+    if(edgeExists(x,y)) throw new EdgeAlreadyExistException("That edge already exists!");
 
     neighbors.get(x).add(y);
     neighbors.get(y).add(x);
   }
 
-  public void removeEdge(final Integer  x, final Integer  y) throws CircularReferenceException, VertexIndexOutOfBoundsException, EdgeDoesNotExistException {
-
-    checkEdge(x, y);
-
-    if(!neighbors.get(x).contains(y)) {
-      throw new EdgeDoesNotExistException("Edge to be removed does not exists: " + x + ", " + y);
-    }
+  public void removeEdge(final Integer  x, final Integer  y) throws
+    CircularReferenceException,
+    VertexIndexOutOfBoundsException,
+    EdgeDoesNotExistException,
+    NullVertexException
+  {
+    if(!edgeExists(x,y)) throw new EdgeDoesNotExistException("Edge to be removed does not exists: " + x + ", " + y);
 
     neighbors.get(x).remove(y);
     neighbors.get(y).remove(x);
-
   }
 
-  public Boolean edgeExists(final Integer x, final Integer y) throws CircularReferenceException, VertexIndexOutOfBoundsException {
+  private Boolean edgeExists(final Integer x, final Integer y) throws
+    CircularReferenceException,
+    VertexIndexOutOfBoundsException,
+    NullVertexException
+  {
     checkEdge(x, y);
 
     return neighbors.get(x).contains(y);
   }
 
-  public Set<Integer> getNeighbors(final Integer vertex) throws VertexIndexOutOfBoundsException {
-    checkVertex(vertex);
-    return neighbors.get(vertex);
-  }
+  private Integer size() { return neighbors.size(); }
 
-  public Integer size() {
-    return this.neighbors.size();
-  }
-
-  public Integer getEdgeGrade(final Integer vertex) {
-    return neighbors.get(vertex).size();
-  }
-
-  private void checkEdge(final Integer x, final Integer y) throws CircularReferenceException, VertexIndexOutOfBoundsException {
-
-    if (x.equals(y)) {
-      throw new CircularReferenceException("Loops not supported (" + x + ", "+ y + ")");
-    }
-
+  private void checkEdge(final Integer x, final Integer y) throws
+    CircularReferenceException,
+    VertexIndexOutOfBoundsException,
+    NullVertexException
+  {
     checkVertex(x);
     checkVertex(y);
 
+    if (x.equals(y)) throw new CircularReferenceException("Loops not supported (" + x + ", "+ y + ")");
+
   }
 
-  private void checkVertex(final Integer vertex) throws VertexIndexOutOfBoundsException {
+  private void checkVertex(final Integer vertex) throws VertexIndexOutOfBoundsException, NullVertexException {
+    if (vertex == null) throw new NullVertexException("Vertex cannot be null!");
     if (vertex < 0 || vertex >= size()) {
       throw new VertexIndexOutOfBoundsException("Vertex out of graph range: " + vertex);
     }
   }
 
-  public Boolean isConnected() {
-    final var connectedGraphs = new HashSet<Integer>();
-    neighbors.forEach(connectedGraphs::addAll);
-
-    return connectedGraphs.size() == size();
-  }
-
-  public boolean isClique(final Set<Integer> set) throws VertexIndexOutOfBoundsException, CircularReferenceException, NullSetException {
-    if (set == null) {
-      throw new NullSetException("Set cannot be null");
-    }
-
-    for (Integer vertex: set) {
-      checkVertex(vertex);
-    }
-
-    if (set.isEmpty()) {
-      return true;
-    }
-
-    for (Integer vertex: set) {
-      for (Integer otherVertex: set) {
-        if (!vertex.equals(otherVertex)) {
-          if (!edgeExists(vertex, otherVertex)) {
-            return false;
-          }
-        }
-      }
-    }
-
-    return true;
-  }
 }
