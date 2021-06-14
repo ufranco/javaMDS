@@ -77,7 +77,7 @@ public class AddEdges {
     edgesRecordLabel.setBounds(22, 11, 150, 14);
     panel.add(edgesRecordLabel);
 
-    edgesRecord = new JLabel("");
+    edgesRecord = new JLabel("[]");
     edgesRecord.setVerticalAlignment(SwingConstants.TOP);
     edgesRecord.setBounds(144, 11, 612, 111);
     panel.add(edgesRecord);
@@ -103,7 +103,7 @@ public class AddEdges {
     try {
       graphService.addEdge(edge.getX(), edge.getY());
       edges.add(edge);
-      String text = String.format("(%s,%s);", edge.getX(), edge.getY());
+      String text = String.format("%s(%s,%s)", record.length() > 2? ";":"", edge.getX(), edge.getY());
       record = record + text;
       edgesRecord.setText("[" + record + "]");
     } catch (VertexIndexOutOfBoundsException | CircularReferenceException | EdgeAlreadyExistException e) {
@@ -136,7 +136,7 @@ public class AddEdges {
       }
     }
     record = String.join(";", recordString);
-    edgesRecord.setText(String.format("[%s;]", record));
+    edgesRecord.setText(String.format("[%s]", record));
   }
 
   private void deleteLast() {
@@ -156,7 +156,7 @@ public class AddEdges {
     Collections.addAll(recordString,record.split(";"));
     recordString.remove(recordString.size()-1);
     record = String.join(";", recordString);
-    edgesRecord.setText(String.format("[%s;]", record));
+    edgesRecord.setText(String.format("[%s]", record));
   }
 
   private void displayGraphCreation() {
