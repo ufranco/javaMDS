@@ -4,14 +4,18 @@ import com.progra3.javaMDS.back.application.exceptions.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.stream.IntStream.iterate;
 
 public final class GraphRepository {
 
-  public ArrayList<Set<Integer>> getNeighbors() {
-    return (ArrayList<Set<Integer>>) neighbors.clone();
+  public List<HashSet<Integer>> getNeighbors() {
+    return neighbors.stream().map(
+      vertexNeighbor -> new HashSet<>(vertexNeighbor)
+    ).collect(Collectors.toList());
   }
 
   private final ArrayList<Set<Integer>> neighbors;

@@ -4,7 +4,8 @@ import com.progra3.javaMDS.back.application.algorithms.MinimumDominatingSetProce
 import com.progra3.javaMDS.back.application.exceptions.*;
 import com.progra3.javaMDS.back.domain.repositories.GraphRepository;
 
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public final class GraphService {
@@ -15,7 +16,11 @@ public final class GraphService {
     repository = new GraphRepository(graphSize);
   }
 
-  public ArrayList<Set<Integer>> addEdge(
+  public List<HashSet<Integer>> getGraph(){
+    return repository.getNeighbors();
+  }
+
+  public List<HashSet<Integer>> addEdge(
     final Integer x,
     final Integer y
   ) throws
@@ -28,7 +33,7 @@ public final class GraphService {
     return repository.getNeighbors();
   }
 
-  public ArrayList<Set<Integer>> removeEdge(
+  public List<HashSet<Integer>> removeEdge(
     final Integer x,
     final Integer y
   ) throws
