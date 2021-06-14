@@ -1,10 +1,7 @@
 package com.progra3.javaMDS.front;
 
 
-import com.progra3.javaMDS.back.application.exceptions.CircularReferenceException;
-import com.progra3.javaMDS.back.application.exceptions.EdgeAlreadyExistException;
-import com.progra3.javaMDS.back.application.exceptions.EdgeDoesNotExistException;
-import com.progra3.javaMDS.back.application.exceptions.VertexIndexOutOfBoundsException;
+import com.progra3.javaMDS.back.application.exceptions.*;
 import com.progra3.javaMDS.back.domain.services.GraphService;
 import com.progra3.javaMDS.front.Utils.Edge;
 
@@ -106,7 +103,7 @@ public class AddEdges {
       String text = String.format("%s(%s,%s)", record.length() > 2? ";":"", edge.getX(), edge.getY());
       record = record + text;
       edgesRecord.setText("[" + record + "]");
-    } catch (VertexIndexOutOfBoundsException | CircularReferenceException | EdgeAlreadyExistException e) {
+    } catch (VertexIndexOutOfBoundsException | CircularReferenceException | EdgeAlreadyExistException | NullVertexException e) {
       JOptionPane.showMessageDialog(this.panel, e.getMessage(), "Error: " + e.getClass().getSimpleName(), JOptionPane.ERROR_MESSAGE);
     }
   }
@@ -119,7 +116,7 @@ public class AddEdges {
       graphService.removeEdge(edge.getX(), edge.getY());
       removeOneRecord(edge);
       edges.remove(edge);
-    } catch (EdgeDoesNotExistException | VertexIndexOutOfBoundsException | CircularReferenceException e) {
+    } catch (EdgeDoesNotExistException | VertexIndexOutOfBoundsException | CircularReferenceException | NullVertexException e) {
       JOptionPane.showMessageDialog(this.panel, e.getMessage(), "Error: " + e.getClass().getSimpleName(), JOptionPane.ERROR_MESSAGE);
     }
   }
@@ -146,7 +143,7 @@ public class AddEdges {
         graphService.removeEdge(edge.getX(),edge.getY());
         removeLastRecord();
         edges.remove(edges.size() - 1);
-      } catch (EdgeDoesNotExistException | CircularReferenceException | VertexIndexOutOfBoundsException e) {
+      } catch (EdgeDoesNotExistException | CircularReferenceException | VertexIndexOutOfBoundsException | NullVertexException e) {
         JOptionPane.showMessageDialog(this.panel, e.getMessage(), "Error: "+e.getClass().getSimpleName(), JOptionPane.ERROR_MESSAGE);
       }
     }
@@ -166,7 +163,7 @@ public class AddEdges {
   }
 
   private void displayEndResult() {
-      new EndResult(getFrame(),2);
+      new EndResult(getFrame(),graphService);
       this.panel.setVisible(false);
       panel.setEnabled(false);
   }

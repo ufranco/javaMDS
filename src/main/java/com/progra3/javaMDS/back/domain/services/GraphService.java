@@ -45,7 +45,9 @@ public final class GraphService {
     return new MinimumDominatingSetProcedure(repository.getNeighbors()).execute();
   }
 
-
+  public ArrayList<Set<Integer>> getGraph(){
+    return repository.getNeighbors();
+  }
 
 
 }
