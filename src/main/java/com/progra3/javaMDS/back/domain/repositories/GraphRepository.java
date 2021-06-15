@@ -11,8 +11,14 @@ import static java.util.stream.IntStream.iterate;
 public final class GraphRepository {
 
   public ArrayList<Set<Integer>> getNeighbors() {
-    return (ArrayList<Set<Integer>>) neighbors.clone();
+    final var neighborsCopy = new ArrayList<Set<Integer>>();
+    neighbors.forEach( vertexNeighbor -> {
+      final var vertexNeighborCopy = new HashSet<Integer>(vertexNeighbor);
+      neighborsCopy.add(vertexNeighborCopy);
+    });
+    return neighborsCopy;
   }
+
 
   private final ArrayList<Set<Integer>> neighbors;
 
