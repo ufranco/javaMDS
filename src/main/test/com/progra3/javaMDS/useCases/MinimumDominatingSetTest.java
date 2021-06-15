@@ -129,7 +129,7 @@ public class MinimumDominatingSetTest {
       .isNotNull()
       .isNotInstanceOf(Exception.class)
       .isInstanceOf(HashSet.class)
-      .hasSize(graphSize);
+      .hasSize(1);
 
   }
 

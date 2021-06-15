@@ -28,9 +28,13 @@ public final class MinimumDominatingSetProcedure {
   }
 
   public Set<Integer> execute() {
-    if(graphHasATrivialMDS()) return vertexesLeftToPick;
-
     final var algorithmResult = new HashSet<Integer>();
+
+    if(graphHasATrivialMDS()) {
+      algorithmResult.add(0);
+      return algorithmResult;
+    }
+
     final var vertexesAlreadyInvolved = new HashSet<Integer>();
 
     findAndAddOrphanVertexes(vertexesAlreadyInvolved, algorithmResult);

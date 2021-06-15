@@ -13,9 +13,7 @@ import static java.util.stream.IntStream.iterate;
 public final class GraphRepository {
 
   public List<HashSet<Integer>> getNeighbors() {
-    return neighbors.stream().map(
-      vertexNeighbor -> new HashSet<>(vertexNeighbor)
-    ).collect(Collectors.toList());
+    return neighbors.stream().map(HashSet::new).collect(Collectors.toList());
   }
 
   private final ArrayList<Set<Integer>> neighbors;
