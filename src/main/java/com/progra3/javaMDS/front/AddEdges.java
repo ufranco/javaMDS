@@ -1,26 +1,34 @@
 package com.progra3.javaMDS.front;
 
 
+import com.progra3.javaMDS.back.application.exceptions.*;
+import com.progra3.javaMDS.back.domain.services.GraphService;
+import com.progra3.javaMDS.front.Utils.Edge;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class AddEdges {
 
   private final JFrame frame;
   private JPanel panel;
+  private final GraphService graphService;
+  private final ArrayList<Edge> edges;
   private final int maxVertexIndex;
-  private JSpinner vertex1, vertex2, weight;
-  private Integer vX, vY, vWeight;
+  private JSpinner vertex1, vertex2;
   private JLabel edgesRecord;
   private String record;
 
 
-  AddEdges(JFrame frame, int vertexCount) {
+  AddEdges(JFrame frame, int vertexCount, GraphService graphService) {
+    this.graphService = graphService;
     record = "";
     this.frame = frame;
     maxVertexIndex = vertexCount == 1 ? 1 : vertexCount - 1;
+    edges = new ArrayList<>();
     initPanel(frame);
     initComponents();
   }
@@ -37,17 +45,11 @@ public class AddEdges {
 
     JButton btnDone = new JButton("Aceptar");
     btnDone.setBounds(305, 398, 167, 36);
-    btnDone.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent arg0) { }
-    });
+    btnDone.addActionListener((e) -> addEdgeToRecord());
     panel.add(btnDone);
 
     JButton btnGoBack = new JButton("<< Anterior");
-    btnGoBack.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent arg0) {
-        displayGraphCreation(getFrame());
-      }
-    });
+    btnGoBack.addActionListener((e) -> displayGraphCreation());
     btnGoBack.setBounds(10, 497, 136, 36);
     panel.add(btnGoBack);
 
@@ -57,80 +59,114 @@ public class AddEdges {
     panel.add(vertex1);
 
     JLabel vertex1Label = new JLabel("Vertice 1:");
-    vertex1Label.setBounds(22, 325, 60, 14);
+    vertex1Label.setBounds(22, 322, 60, 14);
     panel.add(vertex1Label);
 
     vertex2 = new JSpinner();
-    vertex2.setBounds(356, 322, 128, 20);
+    vertex2.setBounds(608, 322, 128, 20);
     vertex2.setModel(new SpinnerNumberModel(0, 0, maxVertexIndex, 1));
     panel.add(vertex2);
     JLabel vertex2Label = new JLabel("Vertice 2:");
-    vertex2Label.setBounds(286, 325, 60, 14);
+    vertex2Label.setBounds(538, 322, 60, 14);
     panel.add(vertex2Label);
-
-    weight = new JSpinner();
-    weight.setBounds(608, 322, 128, 20);
-    weight.setModel(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE - 1, 1));
-    panel.add(weight);
-    JLabel weightLabel = new JLabel("Peso:");
-    weightLabel.setBounds(564, 325, 34, 14);
-    panel.add(weightLabel);
 
     JLabel edgesRecordLabel = new JLabel("Registro de aristas:");
     edgesRecordLabel.setBounds(22, 11, 150, 14);
     panel.add(edgesRecordLabel);
 
-    edgesRecord = new JLabel("");
+    edgesRecord = new JLabel("[]");
     edgesRecord.setVerticalAlignment(SwingConstants.TOP);
     edgesRecord.setBounds(144, 11, 612, 111);
     panel.add(edgesRecord);
 
     JButton btnNext = new JButton("Siguiente >>");
     btnNext.setBounds(638, 497, 136, 36);
-    btnNext.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        displayEndResult(getFrame());
-      }
-    });
+    btnNext.addActionListener(e -> displayEndResult());
     panel.add(btnNext);
 
     JButton btnDeleteLast = new JButton("Borrar anterior");
-    btnDeleteLast.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent arg0) { }
-    });
+    btnDeleteLast.addActionListener((e) -> deleteLast());
     btnDeleteLast.setBounds(157, 425, 136, 36);
     panel.add(btnDeleteLast);
 
     JButton btnDeleteOne = new JButton("Borrar uno");
-    btnDeleteOne.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent arg0) { }
-    });
+    btnDeleteOne.addActionListener((e) -> deleteOne());
     btnDeleteOne.setBounds(480, 425, 136, 36);
     panel.add(btnDeleteOne);
-
   }
 
+  private void addEdgeToRecord() {
+    Edge edge = createEdge();
+    try {
+      graphService.addEdge(edge.getX(), edge.getY());
+      edges.add(edge);
+      String text = String.format("%s(%s,%s)", record.length() > 2? ";":"", edge.getX(), edge.getY());
+      record = record + text;
+      edgesRecord.setText("[" + record + "]");
+    } catch (VertexIndexOutOfBoundsException | CircularReferenceException | EdgeAlreadyExistException | NullVertexException e) {
+      JOptionPane.showMessageDialog(this.panel, e.getMessage(), "Error: " + e.getClass().getSimpleName(), JOptionPane.ERROR_MESSAGE);
+    }
+  }
 
+  private Edge createEdge() { return new Edge((Integer) vertex1.getValue(), (Integer) vertex2.getValue()); }
 
+  private void deleteOne() {
+    Edge edge = createEdge();
+    try {
+      graphService.removeEdge(edge.getX(), edge.getY());
+      removeOneRecord(edge);
+      edges.remove(edge);
+    } catch (EdgeDoesNotExistException | VertexIndexOutOfBoundsException | CircularReferenceException | NullVertexException e) {
+      JOptionPane.showMessageDialog(this.panel, e.getMessage(), "Error: " + e.getClass().getSimpleName(), JOptionPane.ERROR_MESSAGE);
+    }
+  }
 
+  private void removeOneRecord(Edge edge) {
+    String edgeRecord = String.format("(%s,%s)", edge.getX(), edge.getY());
+    String edgeRecord2 = String.format("(%s,%s)", edge.getY(), edge.getX());
+    ArrayList<String> recordString = new ArrayList<>();
+    Collections.addAll(recordString,record.split(";"));
+    for (int i=0; i<recordString.size(); i++) {
+      if (recordString.get(i).equals(edgeRecord) || recordString.get(i).equals(edgeRecord2)) {
+        recordString.remove(i);
+        break;
+      }
+    }
+    record = String.join(";", recordString);
+    edgesRecord.setText(String.format("[%s]", record));
+  }
 
+  private void deleteLast() {
+    Edge edge = edges.get(edges.size()-1);
+    if (edges.size() > 0) {
+      try {
+        graphService.removeEdge(edge.getX(),edge.getY());
+        removeLastRecord();
+        edges.remove(edges.size() - 1);
+      } catch (EdgeDoesNotExistException | CircularReferenceException | VertexIndexOutOfBoundsException | NullVertexException e) {
+        JOptionPane.showMessageDialog(this.panel, e.getMessage(), "Error: "+e.getClass().getSimpleName(), JOptionPane.ERROR_MESSAGE);
+      }
+    }
+  }
+  private void removeLastRecord() {
+    ArrayList<String> recordString = new ArrayList<>();
+    Collections.addAll(recordString,record.split(";"));
+    recordString.remove(recordString.size()-1);
+    record = String.join(";", recordString);
+    edgesRecord.setText(String.format("[%s]", record));
+  }
 
-  private void displayGraphCreation(Object frame) {
-    GraphCreation gc = new GraphCreation(getFrame());
+  private void displayGraphCreation() {
+    new GraphCreation(getFrame());
     this.panel.setVisible(false);
     panel.setEnabled(false);
   }
 
-  private void displayEndResult(JFrame frame) {
-
-      EndResult er = new EndResult(frame,2);
+  private void displayEndResult() {
+      new EndResult(getFrame(),graphService);
       this.panel.setVisible(false);
       panel.setEnabled(false);
-      //else JOptionPane.showMessageDialog(this.panel, "no hay aristas en este grafo");
   }
 
-  private JFrame getFrame() {
-    return this.frame;
-  }
+  private JFrame getFrame() { return this.frame; }
 }

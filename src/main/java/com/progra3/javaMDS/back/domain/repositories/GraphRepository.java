@@ -12,8 +12,10 @@ import static java.util.stream.IntStream.iterate;
 
 public final class GraphRepository {
 
-  public List<HashSet<Integer>> getNeighbors() {
-    return neighbors.stream().map(HashSet::new).collect(Collectors.toList());
+  public List<Set<Integer>> getNeighbors() {
+    return neighbors.stream().map(
+        vertexNeighbor -> new HashSet<>(vertexNeighbor)
+    ).collect(Collectors.toList());
   }
 
   private final ArrayList<Set<Integer>> neighbors;
@@ -24,15 +26,15 @@ public final class GraphRepository {
     neighbors = new ArrayList<>(graphSize);
 
     iterate(0, i -> i + 1)
-      .limit(graphSize)
-      .forEach(i -> neighbors.add(new HashSet<>()));
+        .limit(graphSize)
+        .forEach(i -> neighbors.add(new HashSet<>()));
   }
 
   public void addEdge(final Integer x, final Integer y) throws
-    CircularReferenceException,
-    VertexIndexOutOfBoundsException,
-    EdgeAlreadyExistException,
-    NullVertexException
+      CircularReferenceException,
+      VertexIndexOutOfBoundsException,
+      EdgeAlreadyExistException,
+      NullVertexException
   {
     if(edgeExists(x,y)) throw new EdgeAlreadyExistException("That edge already exists!");
 
@@ -41,10 +43,10 @@ public final class GraphRepository {
   }
 
   public void removeEdge(final Integer  x, final Integer  y) throws
-    CircularReferenceException,
-    VertexIndexOutOfBoundsException,
-    EdgeDoesNotExistException,
-    NullVertexException
+      CircularReferenceException,
+      VertexIndexOutOfBoundsException,
+      EdgeDoesNotExistException,
+      NullVertexException
   {
     if(!edgeExists(x,y)) throw new EdgeDoesNotExistException("Edge to be removed does not exists: " + x + ", " + y);
 
@@ -53,9 +55,9 @@ public final class GraphRepository {
   }
 
   private Boolean edgeExists(final Integer x, final Integer y) throws
-    CircularReferenceException,
-    VertexIndexOutOfBoundsException,
-    NullVertexException
+      CircularReferenceException,
+      VertexIndexOutOfBoundsException,
+      NullVertexException
   {
     checkEdge(x, y);
 
@@ -65,9 +67,9 @@ public final class GraphRepository {
   private Integer size() { return neighbors.size(); }
 
   private void checkEdge(final Integer x, final Integer y) throws
-    CircularReferenceException,
-    VertexIndexOutOfBoundsException,
-    NullVertexException
+      CircularReferenceException,
+      VertexIndexOutOfBoundsException,
+      NullVertexException
   {
     checkVertex(x);
     checkVertex(y);

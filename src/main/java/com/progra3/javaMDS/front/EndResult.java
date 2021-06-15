@@ -1,27 +1,31 @@
 package com.progra3.javaMDS.front;
 
 
+import com.progra3.javaMDS.back.domain.services.GraphService;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
+import java.util.Set;
+
 
 public class EndResult {
 
 
-  private JFrame frame;
+  private final JFrame frame;
   private JPanel panel;
-  private JSpinner regionCounter;
   private JLabel result;
-  private int[][] endResult;
-  private int maxRegions;
-  private int maxWeight;
+  private JButton btnStartProcess;
+  private final GraphService graphService;
+  private Set<Integer> endResult;
+  private final List<Set<Integer>> originalGraph;
 
-  JButton btnStartProcess;
-
-  public EndResult(JFrame frame, int edgesCount) {
+  public EndResult(JFrame frame, GraphService graphService) {
+    originalGraph = graphService.getGraph();
     this.frame = frame;
-    maxRegions = edgesCount;
+    this.graphService = graphService;
     initPanel(frame);
     initComponents();
   }
@@ -39,11 +43,6 @@ public class EndResult {
     result.setBackground(Color.LIGHT_GRAY);
     result.setFont(new Font("Verdana", Font.PLAIN, 16));
     resultPanel.add(result);
-
-    regionCounter = new JSpinner();
-    regionCounter.setBounds(352, 400, 201, 20);
-    regionCounter.setModel(new SpinnerNumberModel(1, 1,maxRegions , 1));
-    panel.add(regionCounter);
 
     JLabel regionCounterLabel = new JLabel("Cantidad de regiones:");
     regionCounterLabel.setBounds(214, 403, 127, 14);
@@ -72,38 +71,21 @@ public class EndResult {
   }
 
   private void startProcess() {
-
     btnStartProcess.setEnabled(false);
-
+    endResult = graphService.executeMDS();
+    parseResponse();
   }
 
-  /*private void parseResponse() {
-    String response ="";
-    int[] vertex = new int[maxRegions];
-    for(int i=0; i<maxRegions;i++) vertex[i] = i;
-
-    for (int i=0; i< edges.size(); i++){
-      response = response + edges.get(i).toString() +"<br>";
+  private void parseResponse() {
+    StringBuilder response = new StringBuilder("<html>Vertices:<br>");
+    for(Integer i : endResult){
+      response.append("|_Vertice: ").append(i.toString()).append("<br>|__vecinos: ");
+      Set<Integer> neighbours = originalGraph.get(i);
+      response.append(neighbours.toString()).append("<br>");
     }
-    result.setText(String.format("<html>Vertices:<br>  %s<br><br>Aristas:<br>  %s<br>Peso total: %d</html>",Arrays.toString(vertex), response, maxWeight));
+    result.setText(response +"</html>");
   }
 
-  private void getResponse() {
-    maxWeight = 0;
-    for (int i=0; i<endResult.length;  i++){
-      for (int j=0; j<endResult.length; j++){
-        if (endResult[i][j] != Integer.MAX_VALUE) {
-          maxWeight += endResult[i][j];
-          Edge edge = new Edge(i, j, endResult[i][j]);
-          if (!edges.contains(edge))
-            edges.add(edge);
-        }
-      }
-    }
-      maxWeight/=2;
-      parseResponse();
-  }
-*/
   private void initPanel(JFrame frame) {
     panel = new JPanel();
     panel.setLayout(null);
@@ -113,7 +95,7 @@ public class EndResult {
   }
 
   private void displayGraphCreation(JFrame frame) {
-    GraphCreation gc = new GraphCreation(frame);
+    new GraphCreation(frame);
     this.panel.setVisible(false);
     panel.setEnabled(false);
   }
@@ -121,5 +103,4 @@ public class EndResult {
   private JFrame getFrame() {
     return this.frame;
   }
-
 }
