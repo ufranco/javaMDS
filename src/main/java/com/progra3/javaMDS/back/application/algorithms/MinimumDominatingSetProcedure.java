@@ -12,10 +12,10 @@ import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toSet;
 
 public final class MinimumDominatingSetProcedure {
-  private final List<HashSet<Integer>> graphTopology;
+  private final List<Set<Integer>> graphTopology;
   private final Set<Integer> vertexesLeftToPick;
 
-  public MinimumDominatingSetProcedure(final List<HashSet<Integer>> graphTopology) {
+  public MinimumDominatingSetProcedure(final List<Set<Integer>> graphTopology) {
     this.graphTopology = graphTopology;
 
     vertexesLeftToPick = Stream.iterate(0, i -> i + 1)
@@ -88,8 +88,9 @@ public final class MinimumDominatingSetProcedure {
   }
 
   private Set<Integer> getVertexNeighborsNotInvolvedMDS(
-    final Set<Integer> vertexesAlreadyInvolved,
-    final Set<Integer> vertexNeighbors
+      final Set<Integer> vertexNeighbors,
+      final Set<Integer> vertexesAlreadyInvolved
+
   ) {
     return vertexNeighbors.stream()
              .filter(not(vertexesAlreadyInvolved::contains))

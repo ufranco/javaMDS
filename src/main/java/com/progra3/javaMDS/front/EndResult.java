@@ -9,12 +9,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
+
 
 public class EndResult {
 
 
-  private JFrame frame;
+  private final JFrame frame;
   private JPanel panel;
   private JLabel result;
   private JButton btnStartProcess;
@@ -77,14 +77,13 @@ public class EndResult {
   }
 
   private void parseResponse() {
-    String response ="<html>Vertices:<br>";
+    StringBuilder response = new StringBuilder("<html>Vertices:<br>");
     for(Integer i : endResult){
-      response = response + "Vertice: "+i.toString() + "<br>  vecinos: [";
+      response.append("|_Vertice: ").append(i.toString()).append("<br>|__vecinos: ");
       Set<Integer> neighbours = originalGraph.get(i);
-      response = response + neighbours.toString()+"]<br>";
+      response.append(neighbours.toString()).append("<br>");
     }
-    System.out.println(response);
-    result.setText(response+"</html>");
+    result.setText(response +"</html>");
   }
 
   private void initPanel(JFrame frame) {
@@ -96,7 +95,7 @@ public class EndResult {
   }
 
   private void displayGraphCreation(JFrame frame) {
-    GraphCreation gc = new GraphCreation(frame);
+    new GraphCreation(frame);
     this.panel.setVisible(false);
     panel.setEnabled(false);
   }
@@ -104,5 +103,4 @@ public class EndResult {
   private JFrame getFrame() {
     return this.frame;
   }
-
 }
