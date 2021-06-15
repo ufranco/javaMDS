@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -20,7 +20,7 @@ public class EndResult {
   private JButton btnStartProcess;
   private final GraphService graphService;
   private Set<Integer> endResult;
-  private final ArrayList<Set<Integer>> originalGraph;
+  private final List<Set<Integer>> originalGraph;
 
   public EndResult(JFrame frame, GraphService graphService) {
     originalGraph = graphService.getGraph();
